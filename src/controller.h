@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <SDL.h>
 
 typedef enum KeyPad{
     TURBO_B     = 1 << 9,
@@ -16,6 +15,9 @@ typedef enum KeyPad{
     BUTTON_A    = 1
 } KeyPad;
 
+#define RESET_BUTTONS (START | SELECT)
+
+
 typedef struct JoyPad{
     uint8_t strobe;
     uint8_t index;
@@ -24,9 +26,23 @@ typedef struct JoyPad{
 } JoyPad;
 
 
+typedef enum {
+    EE_NONE,
+    EE_BUTTON_PRESSED,
+    EE_BUTTON_RELEASED,
+    EE_PAUSE,
+    EE_RESET,
+    EE_EXIT,
+} EmulatorEventType;
+
+typedef struct {
+    EmulatorEventType type;
+    KeyPad button;
+} EmulatorEvent;
+
+
 void init_joypad(struct JoyPad* joyPad, uint8_t player);
 uint8_t read_joypad(struct JoyPad* joyPad);
 void write_joypad(struct JoyPad* joyPad, uint8_t data);
-void update_joypad(struct JoyPad* joyPad, SDL_Event* event);
+void update_joypad(struct JoyPad* joyPad, EmulatorEvent* event);
 void turbo_trigger(struct JoyPad* joyPad);
-void keyboard_mapper(struct JoyPad* joyPad, SDL_Event* event);

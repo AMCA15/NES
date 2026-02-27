@@ -35,19 +35,14 @@ set (SRC
         src/cpu6502.c
         src/debugtools.c
         src/emulator.c
-        src/gamepad.c
         src/genie.c
-        src/gfx.c
         src/mmu.c
         src/ppu.c
-        src/timers.c
         src/trace.c
-        src/touchpad.c
         src/trace.c
         src/utils.c
         src/main.c
         src/nsf.c
-        src/nsf_gfx.c
         src/biquad.c
 
         src/mappers/axrom.c
@@ -62,6 +57,13 @@ set (SRC
         src/mappers/vrc1.c
         src/mappers/mapper185.c
         src/mappers/cprom.c
+        
+        src/platform/sdl/graphics.c
+        src/platform/sdl/audio.c
+        src/platform/sdl/events.c
+        src/platform/sdl/file.c
+        src/platform/sdl/timers.c
+        src/platform/sdl/logging.c
 )
 include_directories(src src/mappers ${SDL_DIR}/include/SDL3 ${SDL_DIR}/include ${SDL_ttf_DIR}/include/SDL3_ttf)
 

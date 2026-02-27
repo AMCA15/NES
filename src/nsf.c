@@ -4,6 +4,7 @@
 #include "nsf.h"
 #include "utils.h"
 #include "emulator.h"
+#include "platform/audio.h"
 
 #define PRG_ROM_SIZE 0x8000
 #define PRG_RAM_SIZE 0x2000
@@ -682,7 +683,7 @@ void init_song(Emulator* emulator, size_t song_number) {
     set_cpu_mode(&emulator->cpu, CPU_WAIT_IRQ);
     emulator->apu.audio_start = 0;
     emulator->apu.sampler.index = 0;
-    SDL_PauseAudio(emulator->g_ctx.audio_stream, 1);
+    audio_pause(emulator->g_ctx.audio_stream, 1);
 
     for(size_t i = 0; i < 14; i++) {
         write_mem(&emulator->mem, 0x4000 + i, 0);

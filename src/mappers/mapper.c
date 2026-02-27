@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
-#include <SDL.h>
 
 #include "mapper.h"
 #include "emulator.h"
 #include "genie.h"
 #include "utils.h"
 #include "nsf.h"
+#include "../platform/file.h"
 
 static int select_mapper(Mapper *mapper);
 static void set_mapping(Mapper *mapper, uint16_t tl, uint16_t tr, uint16_t bl, uint16_t br);
@@ -154,33 +154,39 @@ static void write_CHR(Mapper *mapper, uint16_t address, uint8_t value) {
 }
 
 static long long read_file_to_buffer(char *file_name, uint8_t **buffer) {
-    SDL_IOStream *file = SDL_IOFromFile(file_name, "rb");
-
+    FileAPI* file_api = file_get_api();
+    
+    FileStreamHandle file = file_api->open_file(file_name, FILE_MODE_READ);
     if (file == NULL) {
         LOG(ERROR, "file '%s' not found", file_name);
         return -1;
     }
 
-    long long f_size = SDL_SeekIO(file, 0, SDL_IO_SEEK_END);
+    long long f_size = file_api->seek_file(file, 0, FILE_SEEK_END);
     if (f_size < 0) {
         LOG(ERROR, "Error reading length for file %s", file_name);
+        file_api->close_file(file);
         return -1;
     }
-    SDL_SeekIO(file, 0, SDL_IO_SEEK_SET);
+    
+    file_api->seek_file(file, 0, FILE_SEEK_SET);
 
     *buffer = malloc(f_size);
     if (*buffer == NULL) {
         LOG(ERROR, "Error allocating memory for %s", file_name);
+        file_api->close_file(file);
         return -1;
     }
 
-    size_t input_bytes = SDL_ReadIO(file, *buffer, f_size);
+    size_t input_bytes = file_api->read_file(file, *buffer, f_size);
     if (input_bytes != f_size) {
         free(*buffer);
         LOG(ERROR, "Error reading file %s", file_name);
+        file_api->close_file(file);
         return -1;
     }
 
+    file_api->close_file(file);
     return f_size;
 }
 

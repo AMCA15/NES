@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "apu.h"
 #include "emulator.h"
-#include "gfx.h"
+#include "platform/graphics.h"
 #include "utils.h"
 #include "biquad.h"
+#include "platform/audio.h"
 
 #define TND_LUT_SIZE 203
 #define PULSE_LUT_SIZE 31
@@ -144,7 +145,7 @@ void init_APU(struct Emulator *emulator) {
     init_dmc(&apu->dmc);
     init_sampler(apu, SAMPLING_FREQUENCY);
     init_audio_device(apu);
-    SDL_PauseAudio(emulator->g_ctx.audio_stream, 1);
+    audio_pause(emulator->g_ctx.audio_stream, 1);
     set_status(apu, 0);
     set_frame_counter_ctrl(apu, 0);
 #if AUDIO_TO_FILE
@@ -162,15 +163,15 @@ void reset_APU(APU *apu) {
 
 void init_audio_device(const APU* apu) {
 
-    const SDL_AudioSpec spec = {
-        .format = SDL_AUDIO_S16,
+    const AudioSpec spec = {
+        .format = AUDIO_FORMAT_S16,
         .channels = 1,
-        .freq = SAMPLING_FREQUENCY
+        .frequency = SAMPLING_FREQUENCY
     };
 
-    apu->emulator->g_ctx.audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
+    apu->emulator->g_ctx.audio_stream = audio_open_stream(&spec);
     if (apu->emulator->g_ctx.audio_stream == NULL) {
-        LOG(ERROR , SDL_GetError());
+        LOG(ERROR, "audio_open_stream failed");
         quit(EXIT_FAILURE);
     }
 }
@@ -411,8 +412,8 @@ void sample(APU* apu) {
 }
 
 
-void queue_audio(APU *apu, struct GraphicsContext *ctx) {
-    uint32_t queue_size = SDL_GetAudioStreamQueued(ctx->audio_stream);
+void queue_audio(APU *apu, GraphicsContext *ctx) {
+    uint32_t queue_size = audio_get_queued(ctx->audio_stream);
     apu->stat = apu->stat - apu->stat_window[apu->stat_index] + queue_size;
     apu->stat_window[apu->stat_index++] = queue_size;
     if(apu->stat_index >= STATS_WIN_SIZE)
@@ -437,10 +438,10 @@ void queue_audio(APU *apu, struct GraphicsContext *ctx) {
     }
     // printf("target_f %d \n", s->target_factor);
 
-    SDL_PutAudioStreamData(ctx->audio_stream, apu->buff, s->index * 2);
+    audio_put_data(ctx->audio_stream, apu->buff, s->index * 2);
     // wait till queue is filled to prevent early onset underruns
     if(!apu->audio_start && queue_size >= NOMINAL_QUEUE_SIZE) {
-        SDL_PauseAudio(apu->emulator->g_ctx.audio_stream, 0);
+        audio_pause(apu->emulator->g_ctx.audio_stream, 0);
         apu->audio_start = 1;
     }
 #if AUDIO_TO_FILE

@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "biquad.h"
+#include "platform/graphics.h"
 
 #define SAMPLING_FREQUENCY 48000
 // should be able to store samples produced in 1/60th of a second
@@ -15,7 +16,6 @@
 #define NOMINAL_QUEUE_SIZE 6000
 
 struct Emulator;
-struct GraphicsContext;
 
 enum {
     TIMER_HIGH = 0x7,
@@ -142,7 +142,7 @@ void exit_APU();
 void execute_apu(APU* apu);
 void set_status(APU* apu, uint8_t value);
 float get_sample(APU* apu);
-void queue_audio(APU* apu, struct GraphicsContext* ctx);
+void queue_audio(APU* apu, GraphicsContext* ctx);
 uint8_t read_apu_status(APU* apu);
 void set_frame_counter_ctrl(APU* apu, uint8_t value);
 

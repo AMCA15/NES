@@ -5,8 +5,7 @@
 #include "mmu.h"
 #include "apu.h"
 #include "mapper.h"
-#include "gfx.h"
-#include "timers.h"
+#include "platform/graphics.h"
 
 
 // frame rate in Hz
@@ -30,7 +29,6 @@ typedef struct Emulator{
     Memory mem;
     Mapper mapper;
     GraphicsContext g_ctx;
-    Timer timer;
 
     TVSystem type;
 
@@ -44,5 +42,4 @@ typedef struct Emulator{
 void init_emulator(Emulator* emulator, int argc, char *argv[]);
 void reset_emulator(Emulator* emulator);
 void run_emulator(Emulator* emulator);
-void run_NSF_player(Emulator* emulator);
 void free_emulator(Emulator* emulator);
