@@ -63,7 +63,11 @@ void graphics_init(GraphicsContext* ctx){
 
     sdl_ctx.texture = SDL_CreateTexture(
         sdl_ctx.renderer,
-        SDL_PIXELFORMAT_ABGR8888,
+#ifdef USE_RGB565_PIXEL_FORMAT
+        SDL_PIXELFORMAT_RGB565,
+#else
+        SDL_PIXELFORMAT_ARGB8888,
+#endif
         SDL_TEXTUREACCESS_TARGET,
         ctx->width,
         ctx->height
@@ -82,9 +86,9 @@ void graphics_init(GraphicsContext* ctx){
     LOG(DEBUG, "Initialized SDL subsystem");
 }
 
-void graphics_render(GraphicsContext* g_ctx, const uint32_t* buffer){
+void graphics_render(GraphicsContext* g_ctx, const pixel_t* buffer){
     SDL_RenderClear(sdl_ctx.renderer);
-    SDL_UpdateTexture(sdl_ctx.texture, NULL, buffer, (int)(g_ctx->width * sizeof(uint32_t)));
+    SDL_UpdateTexture(sdl_ctx.texture, NULL, buffer, (int)(g_ctx->width * sizeof(pixel_t)));
     SDL_RenderTexture(sdl_ctx.renderer, sdl_ctx.texture, NULL, NULL);
     SDL_SetRenderDrawColor(sdl_ctx.renderer, 0, 0, 0, 255);
     SDL_RenderPresent(sdl_ctx.renderer);

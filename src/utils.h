@@ -64,9 +64,8 @@ typedef enum ColorFormat {
     ABGR8888
 } ColorFormat;
 
-
-// midpoint circle algorithm rendering utils
 void to_pixel_format(const uint32_t* restrict in, uint32_t* restrict out, size_t size, ColorFormat format);
+void LOG(LogLevel logLevel, const char* fmt, ...);
 void fft(complx *v, int n, complx *tmp);
 uint64_t next_power_of_2(uint64_t num);
 void quit(int code);

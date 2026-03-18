@@ -1,6 +1,7 @@
 #include "emulator.h"
 #include "controller.h"
 #include <stdlib.h>
+#include <string.h>
 #include "mapper.h"
 #include "debugtools.h"
 #include "utils.h"

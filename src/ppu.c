@@ -9,16 +9,14 @@
 static uint16_t render_background(PPU* ppu);
 static uint16_t render_sprites(PPU* ppu, uint16_t bg_addr, uint8_t* back_priority);
 static void update_NMI(PPU* ppu);
-uint32_t nes_palette[64];
 static size_t screen_size;
 
 void init_ppu(struct Emulator* emulator){
-    to_pixel_format(nes_palette_raw, nes_palette, 64, ABGR8888);
     PPU* ppu = &emulator->ppu;
 #if NAMETABLE_MODE
-    screen_size = sizeof(uint32_t) * VISIBLE_SCANLINES * VISIBLE_DOTS * 4;
+    screen_size = sizeof(pixel_t) * VISIBLE_SCANLINES * VISIBLE_DOTS * 4;
 #else
-    screen_size = sizeof(uint32_t) * VISIBLE_SCANLINES * VISIBLE_DOTS;
+    screen_size = sizeof(pixel_t) * VISIBLE_SCANLINES * VISIBLE_DOTS;
 #endif
     ppu->screen = malloc(screen_size);
     ppu->emulator = emulator;

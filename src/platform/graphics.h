@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "ppu.h"
 
 /* Graphics Context - portable structure */
 typedef struct {
@@ -18,7 +19,7 @@ typedef struct {
 typedef struct {
     void (*init)(GraphicsContext* ctx);
     void (*free)(GraphicsContext* ctx);
-    void (*render)(GraphicsContext* ctx, const uint32_t* buffer);
+    void (*render)(GraphicsContext* ctx, const pixel_t* buffer);
 } GraphicsAPI;
 
 /* Get the graphics API implementation */

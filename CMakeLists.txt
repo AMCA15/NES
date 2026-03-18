@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(nes)
+
+set(PROJECT_NAME "nes")
+
+project(${PROJECT_NAME})
 
 set(CMAKE_C_STANDARD 11)
 set(BUILD_DIR build)
@@ -70,12 +73,12 @@ include_directories(src src/mappers ${SDL_DIR}/include/SDL3 ${SDL_DIR}/include $
 
 IF(ANDROID)
   add_library(
-          nes
+          ${PROJECT_NAME}
           SHARED
           ${SRC}
   )
   target_link_libraries(
-          nes
+          ${PROJECT_NAME}
           SDL3::SDL3-shared
           SDL3_ttf::SDL3_ttf-shared
           ${log-lib}
@@ -84,15 +87,19 @@ ELSE()
   IF(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
     enable_language("RC")
     set (WIN32_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/app.rc)
-    add_executable(nes WIN32 ${SRC} ${WIN32_RESOURCES})
+    add_executable(${PROJECT_NAME} WIN32 ${SRC} ${WIN32_RESOURCES})
   ELSE()
-    add_executable(nes ${SRC})
+    add_executable(${PROJECT_NAME} ${SRC})
   ENDIF ()
-  target_link_libraries(nes SDL3::SDL3-static SDL3_ttf::SDL3_ttf-static)
+  target_link_libraries(${PROJECT_NAME} SDL3::SDL3-static SDL3_ttf::SDL3_ttf-static)
 ENDIF()
 
 IF (NOT WIN32)
-  target_link_libraries(nes m)
+  target_link_libraries(${PROJECT_NAME} m)
 ELSE()
-  target_link_libraries(nes winmm.lib)
+  target_link_libraries(${PROJECT_NAME} winmm.lib)
 ENDIF()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+  # USE_RGB565_PIXEL_FORMAT     # Use the RGB565 pixel format; otherwise, use ARGB8888
+)
