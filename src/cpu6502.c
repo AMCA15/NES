@@ -888,21 +888,22 @@ static void fast_set_ZN(c6502* ctx, uint8_t value){
 }
 
 static void push(c6502* ctx, uint8_t value){
-    write_mem(ctx->memory, STACK_START + ctx->sp--, value);
+    ctx->memory->RAM[STACK_START + ctx->sp--] = value;
 }
 
 static void push_address(c6502* ctx, uint16_t address){
-    write_mem(ctx->memory, STACK_START + ctx->sp--, address >> 8);
-    write_mem(ctx->memory, STACK_START + ctx->sp--, address & 0xFF);
+    ctx->memory->RAM[STACK_START + ctx->sp--] = address >> 8;
+    ctx->memory->RAM[STACK_START + ctx->sp--] = address & 0xFF;
 }
 
 static uint8_t pop(c6502* ctx){
-    return read_mem(ctx->memory, STACK_START + ++ctx->sp);
+    return ctx->memory->RAM[STACK_START + ++ctx->sp];
 }
 
 static uint16_t pop_address(c6502* ctx){
-    uint16_t addr = read_mem(ctx->memory, STACK_START + ++ctx->sp);
-    return addr | ((uint16_t)read_mem(ctx->memory, STACK_START + ++ctx->sp)) << 8;
+    uint16_t lo = ctx->memory->RAM[STACK_START + ++ctx->sp];
+    uint16_t hi = ctx->memory->RAM[STACK_START + ++ctx->sp];
+    return lo | (hi << 8);
 }
 
 static uint8_t shift_l(c6502* ctx, uint8_t val){
