@@ -44,7 +44,6 @@ enum{
     Y_SCROLL_BITS   = 0x73E0
 };
 
-struct Emulator;
 
 typedef struct PPU{
     size_t frames;
@@ -57,8 +56,8 @@ typedef struct PPU{
     uint8_t ctrl;
     uint8_t mask;
     uint8_t status;
-    size_t dots;
-    size_t scanlines;
+    uint16_t dots;
+    uint16_t scanlines;
     uint16_t scanlines_per_frame;
 
     uint16_t v;
